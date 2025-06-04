@@ -11,7 +11,7 @@ export const getAllCases: RequestHandler = async (req, res) => {
 
     const searchParams = {
       query: 'uber AND (negligen* OR dismiss*)',
-      state: [query.jurisdiction],
+      state: query.jurisdiction,
       sort: '-filing_date',
       filters: {
         datestart: '2023-01-01',
@@ -36,9 +36,9 @@ export const getCaseDetails: RequestHandler = async (req, res) => {
       res.status(404).json({ error: 'Case not found' });
       return;
     }
-    res.json(caseDetails);
+    return res.json(caseDetails);
   } catch (error: any) {
     console.error('Error in GET /cases/:caseId:', error.message);
-    res.status(500).json({ error: 'Failed to fetch case details' });
+    return res.status(500).json({ error: 'Failed to fetch case details' });
   }
 }; 

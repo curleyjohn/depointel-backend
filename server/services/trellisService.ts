@@ -109,11 +109,9 @@ class TrellisService {
   async getCaseDetails(caseId: string) {
     try {
       // Using GET /v2/cases/{case_id}/ endpoint for case details
-      const response = await axios.get<CaseResponse>(
-        `${this.apiUrl}/v2/cases/${caseId}`,
-        {
-          headers: this.getHeaders()
-        }
+      const response = await axios.get(
+        `${this.apiUrl}/v2/case/${caseId}`,
+        { headers: this.getHeaders() }
       );
       return response.data;
     } catch (error: any) {
