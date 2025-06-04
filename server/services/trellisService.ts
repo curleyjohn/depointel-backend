@@ -129,13 +129,21 @@ class TrellisService {
           'Authorization': headers['Authorization'],
         }
       });
-      if (response.data.data) {
-        return response.data.data.fullname;
-      } else {
-        return 'N/A';
-      }
+      return response.data;
     } catch (error: any) {
       console.error('Error fetching judges from Trellis:', error.message);
+      throw error;
+    }
+  }
+
+  async getParties(token: string) {
+    try {
+      const response = await axios.get(`${this.apiUrl}/v2/case/${token}/parties`, {
+        headers: this.getHeaders()
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Error fetching parties from Trellis:', error.message);
       throw error;
     }
   }
