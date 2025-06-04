@@ -83,12 +83,12 @@ class TrellisService {
       const cases: Case[] = [];
       for (const caseData of response.data.cases) {
         const data = { ...caseData };
-        if (caseData.judge) {
-          const judge = await this.getJudge(caseData.judge);
-          data.judge = judge;
-        } else {
-          data.judge = 'N/A';
-        }
+        // if (caseData.judge) {
+        //   const judge = await this.getJudge(caseData.judge);
+        //   data.judge = judge;
+        // } else {
+        //   data.judge = 'N/A';
+        // }
 
         cases.push(data);
       }

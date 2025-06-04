@@ -14,8 +14,8 @@ export const getAllCases: RequestHandler = async (req, res) => {
       state: query.jurisdiction,
       sort: '-filing_date',
       filters: {
-        datestart: '2023-01-01',
-        dateend: '2023-03-01',
+        datestart: query.date_filed_from,
+        dateend: query.date_filed_to,
       }
     };
 
