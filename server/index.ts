@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import casesRouter from './routes/cases';
-import sheetsRouter from './routes/sheets';
 import tokensRouter from './routes/tokens';
 
 // Load environment variables from the correct path
@@ -18,7 +17,6 @@ app.use(express.json());
 
 // Routes
 app.use('/api/cases', casesRouter);
-app.use('/api/sheets', sheetsRouter);
 app.use('/api/tokens', tokensRouter);
 
 // Basic health check endpoint

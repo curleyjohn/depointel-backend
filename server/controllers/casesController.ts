@@ -1,13 +1,12 @@
 import { RequestHandler } from 'express';
 import TrellisService from '../services/trellisService';
+import SheetService from '../services/sheetsService';
 
 // Get all cases with optional filters
 export const getAllCases: RequestHandler = async (req, res) => {
   try {
     const trellisService = TrellisService.getInstance();
     const { query, page, page_size, sort_by, sort_order } = req.body;
-
-    console.log(req.body);
 
     const searchParams = {
       query: 'uber AND (negligen* OR dismiss*)',
@@ -18,6 +17,8 @@ export const getAllCases: RequestHandler = async (req, res) => {
         dateend: query.date_filed_to,
       }
     };
+
+    await SheetService.appendToSheet();
 
     const ret = await trellisService.getCases(searchParams);
     return res.status(200).json(ret.cases);
