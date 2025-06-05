@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import TrellisService from '../services/trellisService';
-import SheetService from '../services/sheetsService';
+import { appendToSheet } from '../services/sheetsService';
 
 // Get all cases with optional filters
 export const getAllCases: RequestHandler = async (req, res) => {
@@ -18,9 +18,17 @@ export const getAllCases: RequestHandler = async (req, res) => {
       }
     };
 
-    await SheetService.appendToSheet();
-
     const ret = await trellisService.getCases(searchParams);
+
+    // Upload to Google Sheets
+    try {
+      await appendToSheet(ret.cases);
+      console.log(`Uploaded ${ret.cases.length} cases to Google Sheets`);
+    } catch (sheetsError) {
+      console.error('Error uploading to Google Sheets:', sheetsError);
+      // Continue with the response even if sheets upload fails
+    }
+
     return res.status(200).json(ret.cases);
   } catch (error: any) {
     console.error('Error in POST /cases:', error.message);
