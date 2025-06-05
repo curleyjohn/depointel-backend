@@ -22,47 +22,64 @@ export async function appendToSheet(cases: any[]) {
   const sheets = google.sheets({ version: 'v4', auth: client as any });
 
   const spreadsheetId = process.env.GOOGLE_SHEETS_ID || '';
-  const range = 'Sheet1!A1';
-
-  // Map cases to rows
-  const values = cases.map(case_ => [
-    case_.name || '',
-    case_.case || '',
-    case_.court_type || '',
-    case_.county || '',
-    case_.state || '',
-    case_.filing_date || '',
-    case_.status || '',
-    case_.case_token || '',
-    case_.type || '',
-    case_.category || '',
-    case_.practice_area || '',
-    case_.matter_type || '',
-    case_.case_outcome_type || '',
-    case_.verdict || '',
-    case_.time_to_first_cmc || '',
-    case_.time_to_first_dismissal || '',
-    case_.case_cycle_time || '',
-    case_.case_last_updated || '',
-    case_.last_refreshed || '',
-    case_.is_federal ? 'Yes' : 'No',
-    case_.raw_causes_of_action || '',
-    case_.complaint_overview || ''
-  ]);
 
   try {
+    // First, get existing rows to check for duplicates
+    const existingRows = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Sheet1!A:Z'
+    });
+
+    const existingCases = existingRows.data.values || [];
+    const existingCaseTokens = new Set(existingCases.map(row => row[1])); // case is at index 1
+
+    // Filter out cases that already exist in the sheet
+    const newCases = cases.filter(case_ => !existingCaseTokens.has(case_.case));
+
+    if (newCases.length === 0) {
+      console.log('No new cases to upload - all cases already exist in the sheet');
+      return { updatedCells: 0 };
+    }
+
+    // Map new cases to rows
+    const values = newCases.map(case_ => [
+      case_.name || '',
+      case_.case || '',
+      case_.court_type || '',
+      case_.county || '',
+      case_.state || '',
+      case_.filing_date || '',
+      case_.status || '',
+      case_.case_token || '',
+      case_.type || '',
+      case_.category || '',
+      case_.practice_area || '',
+      case_.matter_type || '',
+      case_.case_outcome_type || '',
+      case_.verdict || '',
+      case_.time_to_first_cmc || '',
+      case_.time_to_first_dismissal || '',
+      case_.case_cycle_time || '',
+      case_.case_last_updated || '',
+      case_.last_refreshed || '',
+      case_.is_federal ? 'Yes' : 'No',
+      case_.raw_causes_of_action || '',
+      case_.complaint_overview || ''
+    ]);
+
     const result = await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range,
+      range: 'Sheet1!A1',
       valueInputOption: 'RAW',
       requestBody: {
         values
       }
     });
-    console.log(`${result.data.updates?.updatedCells} cells appended.`);
+
+    console.log(`Uploaded ${newCases.length} new cases to Google Sheets`);
     return result.data;
   } catch (err) {
-    console.error('Error appending to Google Sheets:', err);
+    console.error('Error handling Google Sheets:', err);
     throw err;
   }
 }
